@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Aug 30 21:48:54 2020
-
-@author: u1876024
-"""
 from utils import *
 
 #%% Graph Fitting
