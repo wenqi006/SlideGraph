@@ -1,3 +1,4 @@
+python==3.7.7
 glob==0.7
 numpy==1.18.1
 pickle==0.7.5
