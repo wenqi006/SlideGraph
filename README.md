@@ -11,7 +11,7 @@ Each WSI should be fitted with one npz file which contains three parts: x_coordi
 
 Then, run features_to_graph.py to group spatially neighbouring regions with high degree of feature similarity and construct a graph based on clusters for each WSI.
 
-After getting graphs of all WSIs, train the classification model using
+After getting graphs of all WSIs, train the classification model (5-fold cross validation) using
 
 python train.py
 
