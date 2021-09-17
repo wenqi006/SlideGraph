@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Aug 30 14:17:25 2020
-
-@author: u1876024
-"""
 import torch
 from utils import *
 from torch.utils.data import Sampler
