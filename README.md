@@ -5,7 +5,7 @@ A graph neural network that performs classification task using entire WSI-level 
 Please refer to requirements.txt
 
 ## Training the classification model
-Before training, it is required to generate feature vectors for patches in the WSIs. Feature varies. It can be nuclear composition features (e.g.,counts of different types of nuclei in the patch), morphological features, receptor expression features, deep features (or neuralfeature embdeddings from a pre-trained neural network) and acombination of these. 
+Before training, it is required to generate feature vectors for patches in the WSIs. Feature varies. It can be nuclear composition features (e.g.,counts of different types of nuclei in the patch), morphological features, receptor expression features, deep features (or neuralfeature embdeddings from a pre-trained neural network) and so on. 
 
 Each WSI should be fitted with one npz file which contains three parts: x_coordinate, y_coordinate and corresponding patch-level feature vector. Please refer to feature.npz in the example folder.
 
