@@ -58,24 +58,10 @@ if __name__ == '__main__':
 
         if filename.endswith(".npz"):
             d = np.load(feature_path + '/' + filename, allow_pickle=True)
-            x, y, F = d['x_patch'], d['y_patch'], d['hover_mophological_feature']
-            ###############################
-            # extract features of morphology
-            F_patch = []
-            index_empty_array = []
-            for no_patch in range(len(F)):
-                cell_info_per_patch = F[no_patch]
-                if cell_info_per_patch == []:
-                    index_empty_array.append(int(no_patch))
-                    continue
-                mean_per_patch = np.mean(np.array(cell_info_per_patch)[:,:-2], axis=0)
-                std_per_patch = np.std(np.array(cell_info_per_patch)[:,:-2], axis=0)
-                arr = np.concatenate((mean_per_patch, std_per_patch))
-                F_patch.append(arr)
-            ###############################
-            x = np.delete(x, np.array(index_empty_array), axis=0)
-            y = np.delete(y, np.array(index_empty_array), axis=0)
-            F = np.array(F_patch)
+
+            x, y, F = d['x_patch'], d['y_patch'], d['feature']
+            ridx = (np.max(F, axis=0) - np.min(F, axis=0)) > 1e-4
+            F = F[:, ridx]
             C = np.asarray(np.vstack((x, y)).T, dtype=np.int)
 
             lambda_d = 3e-3
@@ -120,3 +106,4 @@ if __name__ == '__main__':
 
             with open(ofile, 'wb') as f:
                 pickle.dump(G, f)
+
