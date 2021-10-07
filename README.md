@@ -16,3 +16,11 @@ After getting graphs of all WSIs, train the classification model and do 5-fold s
 python train.py
 
 Parameters learning_rate, weight_decay can be adjusted in train.py
+
+## License
+
+The source code SlideGraph as hosted on GitHub is released under the [GNU General Public License (Version 3)].
+
+The full text of the licence is included in [LICENSE.md](https://github.com/wenqi006/SlideGraph/blob/main/LICENSE.md).
+
+[gnu general public license (version 3)]: https://www.gnu.org/licenses/gpl-3.0.html
