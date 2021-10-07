@@ -1,6 +1,8 @@
 import torch
 from utils import *
 from torch.utils.data import Sampler
+from sklearn.metrics import auc, roc_auc_score, roc_curve, precision_recall_curve, average_precision_score, confusion_matrix
+
 class StratifiedSampler(Sampler):
     """Stratified Sampling
          return a stratified batch
@@ -23,17 +25,6 @@ class StratifiedSampler(Sampler):
         YY = self.class_vector.numpy()
         idx = np.arange(len(YY))
         return [tidx for _,tidx in skf.split(idx,YY)] #return array of arrays of indices in each batch
-        # #Binary sampling: Returns a pair index of positive and negative index-All samples from majority class are paired with repeated samples from minority class
-        # U, C = np.unique(YY, return_counts=True)
-        # M = U[np.argmax(C)]        
-        # Midx = np.nonzero(YY==M)[0]
-        # midx = np.nonzero(YY!=M)[0]
-        # midx_ = np.random.choice(midx,size=len(Midx))
-        # if M>0: #if majority is positive            
-        #     return np.vstack((Midx,midx_)).T
-        # else:
-        #     return np.vstack((midx_,Midx)).T
- 
 
     def __iter__(self):
         return iter(self.gen_sample_array())
@@ -41,34 +32,16 @@ class StratifiedSampler(Sampler):
     def __len__(self):
         return len(self.class_vector)
 
-
-
-from sklearn.metrics import auc, roc_auc_score, roc_curve, precision_recall_curve, average_precision_score, confusion_matrix
-def calc_roc_auc(target, prediction):
-    #import pdb;pdb.set_trace()
-    #return np.mean(toNumpy(target)==(toNumpy(prediction[:,1]-prediction[:,0])>0))
-    
+def calc_roc_auc(target, prediction):    
     return roc_auc_score(toNumpy(target),toNumpy(prediction[:,-1]))
-    # output = F.softmax(prediction, dim=1)
-    # output = output.detach()[:, 1]
-    # fpr, tpr, thresholds = roc_curve(target.cpu().numpy(), output.cpu().numpy())
-    # roc_auc = auc(fpr, tpr)
-    # import pdb;pdb.set_trace()
-    # return roc_auc
-
 
 def calc_pr(target, prediction):
-    # import pdb;pdb.set_trace()
-    # return np.mean(toNumpy(target)==(toNumpy(prediction[:,1]-prediction[:,0])>0))
-
     return average_precision_score(toNumpy(target), toNumpy(prediction[:, -1]))
 
 #%% Graph Neural Network 
 class GNN(torch.nn.Module):
     def __init__(self, dim_features, dim_target, layers=[6,6],pooling='max',dropout = 0.0,conv='GINConv',gembed=False,**kwargs):
         """
-        
-
         Parameters
         ----------
         dim_features : TYPE Int
@@ -113,8 +86,6 @@ class GNN(torch.nn.Module):
 
         for layer, out_emb_dim in enumerate(self.embeddings_dim):
             if layer == 0:
-                # self.first_h = Sequential(Linear(dim_features, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU(),
-                #                     Linear(out_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())     
                 self.first_h = Sequential(Linear(dim_features, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())
                 self.linears.append(Linear(out_emb_dim, dim_target))
                 
@@ -122,14 +93,10 @@ class GNN(torch.nn.Module):
                 input_emb_dim = self.embeddings_dim[layer-1]
                 self.linears.append(Linear(out_emb_dim, dim_target))                
                 if conv=='GINConv':
-                    # self.nns.append(Sequential(Linear(input_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU(),
-                    #                        Linear(out_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU()))
                     subnet = Sequential(Linear(input_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())
                     self.nns.append(subnet)
                     self.convs.append(GINConv(self.nns[-1], **kwargs))  # Eq. 4.2 eps=100, train_eps=False
                 elif conv=='EdgeConv':
-                    # subnet = Sequential(Linear(2*input_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU(),
-                    #                       Linear(out_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())   
                     subnet = Sequential(Linear(2*input_emb_dim, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())
                     self.nns.append(subnet)                    
                     self.convs.append(EdgeConv(self.nns[-1],**kwargs))#DynamicEdgeConv#EdgeConv                aggr='mean'
@@ -137,12 +104,10 @@ class GNN(torch.nn.Module):
                 else:
                     raise NotImplementedError  
                     
-        #self.first_h = torch.nn.ModuleList(self.first_h)
         self.nns = torch.nn.ModuleList(self.nns)
         self.convs = torch.nn.ModuleList(self.convs)
         self.linears = torch.nn.ModuleList(self.linears)  # has got one more for initial input
 
-        
     def forward(self, data):
 
         x, edge_index, batch = data.x, data.edge_index, data.batch
@@ -166,8 +131,6 @@ class GNN(torch.nn.Module):
                 else:
                     dout = F.dropout(self.linears[layer](pooling(x, batch)), p=self.dropout, training=self.training)
                 out += dout
-            #import pdb;pdb.set_trace()
-
         return out,Z,x
     
 #%% Wrapper for neetwork training   
@@ -281,7 +244,6 @@ class NetWrapper:
         loss_all = 0
         acc_all = 0
         assert self.classification
-        #lossfun = nn.MarginRankingLoss(margin=1.0,reduction='sum')
         for data in train_loader:
             
             data = data.to(self.device)
@@ -323,51 +285,6 @@ class NetWrapper:
             optimizer.step()
 
         return acc_all / len(train_loader.dataset), loss_all / len(train_loader.dataset)
-     
-
-    def _train(self, train_loader, optimizer, clipping=None):
-        """
-        Original training method
-        """
-        model = self.model.to(self.device)
-
-        model.train()
-
-        loss_all = 0
-        acc_all = 0
-        for data in train_loader:
-            
-            data = data.to(self.device)
-            optimizer.zero_grad()
-            output = model(data)
-
-            if not isinstance(output, tuple):
-                output = (output,)
-
-            if self.classification:
-                loss, acc = self.loss_fun(data.y, *output)
-                loss.backward()
-
-                try:
-                    num_graphs = data.num_graphs
-                except TypeError:
-                    num_graphs = data.adj.size(0)
-
-                loss_all += loss.item() * num_graphs
-                acc_all += acc.item() * num_graphs
-            else:
-                loss = self.loss_fun(data.y, *output)
-                loss.backward()
-                loss_all += loss.item()
-
-            if clipping is not None:  # Clip gradient before updating weights
-                torch.nn.utils.clip_grad_norm_(model.parameters(), clipping)
-            optimizer.step()
-
-        if self.classification:
-            return acc_all / len(train_loader.dataset), loss_all / len(train_loader.dataset)
-        else:
-            return None, loss_all / len(train_loader.dataset)
     
     def classify_graphs(self, loader):
         Z,Y,_ = decision_function(self.model,loader,device=self.device)
@@ -377,7 +294,7 @@ class NetWrapper:
         loss = 0
         auc_val = calc_roc_auc(Y, *Z)
         pr = calc_pr(Y, *Z)
-        return auc_val, loss, pr#, auc, pr
+        return auc_val, loss, pr
         
     def train(self, train_loader, max_epochs=100, optimizer=torch.optim.Adam, scheduler=None, clipping=None,
               validation_loader=None, test_loader=None, early_stopping=100, return_best = True, log_every=0):
