@@ -30,13 +30,13 @@ if __name__ == '__main__':
         G = pickleLoad(f)
         G = G.to(device)
 
-        idx = np.nonzero(P == os.path.split(f)[-1].split('_')[0][:12])[0]
+        idx = np.nonzero(P == os.path.split(f)[-1].split('_')[0][:12])[0] # match case ID between clinical file and graphs
         if len(idx) == 0:
             continue
         m = list(M[idx])[0]
         if m not in ['Positive', 'Negative']:
             continue
-        G.y = toTensor([int(m == 'Positive')], dtype=torch.long, requires_grad=False)
+        G.y = toTensor([int(m == 'Positive')], dtype=torch.long, requires_grad=False) # label=1 if status is positive
         GN.append(G.x)
         dataset.append(G)
 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     scheduler = None
     from sklearn.model_selection import StratifiedKFold, train_test_split
 
-    skf = StratifiedKFold(n_splits=5, shuffle=False)  # k fold cv
+    skf = StratifiedKFold(n_splits=5, shuffle=False)  # Stratified k fold cv
     Vacc, Tacc, Vapr, Tapr, Test_ROC_overall, Test_PR_overall = [], [], [], [], [],  []
 
     Fdata = []
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         tt_loader = DataLoader(test_dataset, shuffle=False)
 
         train, valid = train_test_split(trvi, test_size=0.10, shuffle=True,
-                                        stratify=np.array(Y)[trvi])  # validation and training split
+                                        stratify=np.array(Y)[trvi])  # Among trvi, 10% for validation and 90% for training 
         sampler = StratifiedSampler(class_vector=torch.from_numpy(np.array(Y)[train]), batch_size=8)
 
         train_dataset = [dataset[i] for i in train]
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         v_loader = DataLoader(valid_dataset, shuffle=False)
 
         model = GNN(dim_features=dataset[0].x.shape[1], dim_target=1, layers=[16, 16, 8], dropout=0.5, pooling='mean',
-                    conv='EdgeConv', aggr='max') 
+                    conv='EdgeConv', aggr='max') # Build network architecture
 
         net = NetWrapper(model, loss_function=None, device=device)
         model = model.to(device=net.device)
@@ -95,11 +95,15 @@ if __name__ == '__main__':
         Tapr.append(test_pr)
         print("\nfold complete", len(Vacc), train_acc, val_acc, tt_acc, val_pr, test_pr)
 
+    # Averaged AUROC and AUPR among 5 folds
+    print("avg Valid AUC=", np.mean(Vacc), "+/-", np.std(Vacc))
+    print("avg Test AUC=", np.mean(Tacc), "+/-", np.std(Tacc))
+    print("avg Valid PR=", np.mean(Vapr), "+/-", np.std(Vapr))
+    print("avg Test PR=", np.mean(Tapr), "+/-", np.std(Tapr))
+    
+    # Use top k best models in each fold running and calculate averaged AUROC and AUPR among 5 folds
     aa = []
     bb = []
-    import roc
-
-    F = []
     for idx in range(len(Fdata)):
         Q, test_dataset, valid_dataset = Fdata[idx]
         zz, yy = EnsembleDecisionScoring(Q, train_dataset, test_dataset, device=net.device, k=10)
@@ -107,14 +111,5 @@ if __name__ == '__main__':
         aa.append(roc_auc_score(yy, zz))
         bb.append(average_precision_score(yy, zz))
 
-    print("avg Valid AUC=", np.mean(Vacc), "+/-", np.std(Vacc))
-    print("avg Test AUC=", np.mean(Tacc), "+/-", np.std(Tacc))
-    print("avg Valid PR=", np.mean(Vapr), "+/-", np.std(Vapr))
-    print("avg Test PR=", np.mean(Tapr), "+/-", np.std(Tapr))
-
     print("avg Test AUC overall=", np.mean(aa), "+/-", np.std(aa))
     print("avg Test PR overall=", np.mean(bb), "+/-", np.std(bb))
-    
-
- 
-
