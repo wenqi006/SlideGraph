@@ -25,13 +25,13 @@ if __name__ == '__main__':
     scheduler = None
 
     # Load clinical data
-    clin_path = os.path.join('/content', 'gdrive', 'My Drive', 'Colab Notebooks', 'TCGA-BRCA-DX_CLINI.csv')
+    clin_path = './CLINI.csv'
     clin_data = pd.read_csv(clin_path)  # path to clinical file
     Patient_ID = np.array(clin_data['PATIENT'])
     Receptor_status = clin_data['HER2FinalStatus']
 
     # Load graphs
-    bdir = os.path.join('/content', 'gdrive', 'My Drive', 'Colab Notebooks', 'graphs_on_resnet_features')  # path to graphs
+    bdir = './graphs'  # path to graphs
     graphlist = glob(os.path.join(bdir, "*.pkl"))
     GN = []
     device = 'cuda:0'
