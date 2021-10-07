@@ -16,10 +16,10 @@ def cuda(v):
     if USE_CUDA:
         return v.cuda()
     return v
-def toTensor(v,dtype = torch.float,requires_grad = True): 
-    device = 'cuda:1'   
-    return (Variable(torch.tensor(v)).type(dtype).requires_grad_(requires_grad)).to(device)
 
+def toTensor(v,dtype = torch.float,requires_grad = True): 
+    device = 'cuda:0'   
+    return (Variable(torch.tensor(v)).type(dtype).requires_grad_(requires_grad)).to(device)
 
 def connectClusters(Cc,dthresh = 3000):
     tess = Delaunay(Cc)
@@ -41,32 +41,24 @@ def connectClusters(Cc,dthresh = 3000):
 def toGeometric(X,W,y,tt=0):    
     return Data(x=toTensor(X,requires_grad = False), edge_index=(toTensor(W,requires_grad = False)>tt).nonzero().t().contiguous(),y=toTensor([y],dtype=torch.long,requires_grad = False))
 
-
-
-
-
 if __name__ == '__main__':
-    feature_path = './hover_morphological_features' # load x, y coordinates and features of patches in each WSI
-    hover_count_path = ''
+    # similarity parameters
+    lambda_d = 3e-3 
+    lambda_f = 1.0e-3
+    feature_path = './example' # load x, y coordinates and features of patches in each WSI
     output_path = './graphs'
     for filename in tqdm(os.listdir(feature_path)):
         print(filename)
-        ofile = os.path.join(output_path, filename[:23] + '.pkl')
+        ofile = os.path.join(output_path, filename[:-4] + '.pkl')
         if os.path.isfile(ofile):
             continue
         label = int(1)
-
         if filename.endswith(".npz"):
             d = np.load(feature_path + '/' + filename, allow_pickle=True)
-
             x, y, F = d['x_patch'], d['y_patch'], d['feature']
-            ridx = (np.max(F, axis=0) - np.min(F, axis=0)) > 1e-4
+            ridx = (np.max(F, axis=0) - np.min(F, axis=0)) > 1e-4 # remove feature which does not change
             F = F[:, ridx]
             C = np.asarray(np.vstack((x, y)).T, dtype=np.int)
-
-            lambda_d = 3e-3
-            lambda_f = 1.0e-3
-
             TC = sKDTree(C)
             I, D = TC.query_radius(C, r=6 / lambda_d, return_distance=True, sort_results=True)
             DX = np.zeros(int(C.shape[0] * (C.shape[0] - 1) / 2))
@@ -83,7 +75,7 @@ if __name__ == '__main__':
             d = DX
 
             # %%
-            lamda_h = 0.8
+            lamda_h = 0.8. # Hierachical clustering distance threshold
             Z = hierarchy.linkage(d, method='average')
             clusters = fcluster(Z, lamda_h, criterion='distance')
             uc = list(set(clusters))
