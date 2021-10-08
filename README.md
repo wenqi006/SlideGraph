@@ -4,6 +4,9 @@ Couple whole slide image (WSI)-level graph representation with a graph convoluti
 ## Environment
 Please refer to requirements.txt
 
+## Data
+The data used in this study was downloaded from TCGA using the [manifest file] (https://portal.gdc.cancer.gov/projects/TCGA-BRCA).
+
 ## Training the classification model
 Before training, it is required to generate x,y coordinates, feature vectors for local regions in the WSIs. Feature varies. It can be nuclear composition features (e.g.,counts of different types of nuclei in the patch), morphological features, receptor expression features, deep features (or neuralfeature embdeddings from a pre-trained neural network) and so on. 
 
