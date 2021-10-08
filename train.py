@@ -19,6 +19,7 @@
 # ***** END GPL LICENSE BLOCK *****
 
 from utils import *
+from GNN_pr import *
 from glob import glob
 import os
 import pandas as pd
