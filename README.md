@@ -1,5 +1,5 @@
-# SlideGraph
-Couple whole slide image (WSI)-level graph representation with a graph convolutional network for capturing the global context of a WSI. This pipeline generates node-level and WSI-level predictions by using a graph representation to capture the biological geometric structure of the cellular architecture at the entire WSI level.
+# SlideGraph+: Whole Slide Image Level Graphs to Predict HER2 Status in Breast Cancer
+A novel graph neural network (GNN) based model (termed SlideGraph+) to predict HER2 status directly from whole-slide images of routine Haematoxylin and Eosin (H&E) slides. This pipeline generates node-level and WSI-level predictions by using a graph representation to capture the biological geometric structure of the cellular architecture at the entire WSI level.
 
 ## Environment
 Please refer to requirements.txt
