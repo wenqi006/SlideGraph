@@ -1,13 +1,23 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 24 19:24:42 2016
-This is a python implementation of Platt's normalization of classifier output scores to a probability value. It is an implementation of the Algorithm presented in:
-Platt, John C. “Probabilistic Outputs for Support Vector Machines and Comparisons to Regularized Likelihood Methods.” In Advances in Large Margin Classifiers, 6174. MIT Press, 1999.
-URL: http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639
-Often times, after training a classifier, the output scores of a classifier need to be mapped to a more interpretable value. Platt's normalization is a classical method of doing just that. It fits a sigmoidal function z = 1/(1+exp(A*v+B) to the output scores v from the classifier and targets. The coefficients of the sigmoidal function can then be used to transform the output of any output from the classifier to a pseudo-probability value.
-Implemented by: Dr. Fayyaz Minhas
-@author: afsar
-"""
+# ***** BEGIN GPL LICENSE BLOCK *****
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software Foundation,
+# Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+# The Original Code is Copyright (C) 2021, Wenqi Lu, Fayyaz Minhas, University of Warwick
+# All rights reserved.
+# ***** END GPL LICENSE BLOCK *****
+
 import numpy as np
 class PlattScaling:
     def __init__(self):
@@ -15,7 +25,7 @@ class PlattScaling:
         self.B = None
     def fit(self,L,V):
         """
-        Fit the sigmoid to the classifier scores V and labels L  using the Platt Mehtod
+        Fit the sigmoid to the classifier scores V and labels L  using the Platt Method
         Input:  V array-like of classifier output scores
                 L array like of classifier labels (+1/-1 pr +1/0)
         Output: Coefficients A and B for the sigmoid function
@@ -106,9 +116,6 @@ class PlattScaling:
     def __repr__(self):
         A,B = self.A,self.B
         return "Platt Scaling: "+f'A: {A}, B: {B}'
-
-
-    
 
 
 if __name__ == '__main__':
