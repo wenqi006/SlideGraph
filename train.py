@@ -122,6 +122,7 @@ if __name__ == '__main__':
         print("\nfold complete", len(Vacc), train_acc, val_acc, tt_acc, val_pr, test_pr)
 
     # Averaged results of 5 folds
+    print('Average classification performance on validation and test sets using the model from final epoch:')
     print("avg Valid AUC=", np.mean(Vacc), "+/-", np.std(Vacc))
     print("avg Test AUC=", np.mean(Tacc), "+/-", np.std(Tacc))
     print("avg Valid PR=", np.mean(Vapr), "+/-", np.std(Vapr))
@@ -135,6 +136,6 @@ if __name__ == '__main__':
         zz, yy = EnsembleDecisionScoring(Q, train_dataset, test_dataset, device=net.device, k=10)
         auroc.append(roc_auc_score(yy, zz))
         aupr.append(average_precision_score(yy, zz))
-
+    print('Average classification performance on test sets by aggregating the prediction from top 10 best models:')
     print("avg Test AUC overall=", np.mean(auroc), "+/-", np.std(auroc))
     print("avg Test PR overall=", np.mean(bb), "+/-", np.std(aupr))
