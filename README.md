@@ -1,11 +1,14 @@
 # SlideGraph+: Whole Slide Image Level Graphs to Predict HER2 Status in Breast Cancer
 A novel graph neural network (GNN) based model (termed SlideGraph+) to predict HER2 status directly from whole-slide images of routine Haematoxylin and Eosin (H&E) slides. This pipeline generates node-level and WSI-level predictions by using a graph representation to capture the biological geometric structure of the cellular architecture at the entire WSI level. A pre-processing function is used to do adaptive spatial agglomerative clustering to group spatially neighbouring regions with high degree of feature similarity and construct a WSI-level graph based on clusters.
 
+## Data
+The repository can be used for constructing WSI-level graphs, training SlideGraph and predicting HER2 status on WSI-level graphs. The training data used in this study was downloaded from TCGA using https://portal.gdc.cancer.gov/projects/TCGA-BRCA.
+
+## Workflow of predicting HER2 status from H&E images
+<img width="1201" alt="workflow1" src="https://user-images.githubusercontent.com/58427109/136570069-57686d6c-e34f-4176-a8ec-9c86400f7cc7.png">
+
 ## Environment
 Please refer to requirements.txt
-
-## Data
-The data used in this study was downloaded from TCGA using https://portal.gdc.cancer.gov/projects/TCGA-BRCA.
 
 ## Training the classification model
 Before training, it is required to generate x,y coordinates, feature vectors for local regions in the WSIs. Feature varies. It can be nuclear composition features (e.g.,counts of different types of nuclei in the patch), morphological features, receptor expression features, deep features (or neuralfeature embdeddings from a pre-trained neural network) and so on. 
