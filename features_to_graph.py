@@ -65,6 +65,8 @@ if __name__ == '__main__':
     # similarity parameters
     lambda_d = 3e-3 
     lambda_f = 1.0e-3
+    lamda_h = 0.8 # Hierachical clustering distance threshold
+    distance_thres = 4000
     feature_path = './example' # load x, y coordinates and features of patches in each WSI
     output_path = './graphs'
     for filename in tqdm(os.listdir(feature_path)):
@@ -95,7 +97,6 @@ if __name__ == '__main__':
             d = DX
 
             # %%
-            lamda_h = 0.8. # Hierachical clustering distance threshold
             Z = hierarchy.linkage(d, method='average')
             clusters = fcluster(Z, lamda_h, criterion='distance')
             uc = list(set(clusters))
@@ -112,7 +113,7 @@ if __name__ == '__main__':
             C_cluster = np.array(C_cluster)
             F_cluster = np.array((F_cluster))
 
-            W = connectClusters(C_cluster, dthresh=4000)
+            W = connectClusters(C_cluster, dthresh=distance_thres)
             G = toGeometric(F_cluster, W, y=label)
             G.coords = toTensor(C_cluster, requires_grad=False)
 
