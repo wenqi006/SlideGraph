@@ -19,6 +19,7 @@
 # ***** END GPL LICENSE BLOCK *****
 
 import torch
+from platt import PlattScaling
 from utils import *
 from torch.utils.data import Sampler
 from sklearn.metrics import auc, roc_auc_score, roc_curve, precision_recall_curve, average_precision_score, confusion_matrix
