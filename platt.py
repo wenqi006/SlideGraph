@@ -116,20 +116,3 @@ class PlattScaling:
     def __repr__(self):
         A,B = self.A,self.B
         return "Platt Scaling: "+f'A: {A}, B: {B}'
-
-
-if __name__ == '__main__':
-
-    V = 3*(2*np.random.rand(100)-1) #classifier output raw scores
-    L = 2*((V+2*np.random.rand(len(V))-1)>0)-1 #Original binary labels
-    pp = PlattScaling().fit_transform(L, V) #rescling-coefficients
-    #print('A =',A,'B =',B)
-    #pp = sigmoid(V,A,B)
-    from sklearn.metrics import roc_auc_score
-    print("Print Ranges:")
-    
-    print("Original:",np.min(V),np.max(V))
-    print("Rescaled:",np.min(pp),np.max(pp))
-    print("Calculate AUC-ROC (should not change):")
-    print(roc_auc_score(L,pp))
-    print(roc_auc_score(L,V))
