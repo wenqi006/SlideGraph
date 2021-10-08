@@ -39,14 +39,19 @@ After npz files are ready, run features_to_graph.py to group spatially neighbour
 
 ### Training
 After getting graphs of all WSIs, 
-* Set path to the graph directories (bdir) 
-* Set path to the clinical data (clin_path) 
+* Set path to the graph directories (bdir) in train.py  
+* Set path to the clinical data (clin_path) in train.py  
 * Modify hyperparameters, including learning_rate, weight_decay in train.py 
 
 Train the classification model and do 5-fold stratified cross validation using
 
 python train.py
 
+In each fold, top 10 best models (on validation dataset) and the model from the last epoch are tested on the testing dataset. Averaged classification performance among 5 folds are presented in the end.
+
+## Heatmap of node-level prediction scores
+<img width="634" alt="heatmap_final" src="https://user-images.githubusercontent.com/58427109/136618599-d41b4653-2e2c-4d5a-ad49-a7de2fc001b3.png">
+Heatmaps of node-level prediction scores and zoomed-in regions which have different levels of HER2 prediction score. Boundary colour of each zoomed-in region represents its contribution to HER2 positivity (prediction score).
 
 ## License
 
