@@ -22,13 +22,7 @@ from GNN_pr import *
 from glob import glob
 import os
 import pandas as pd
-import numpy as np
 import pickle
-from torch.autograd import Variable
-from torch_geometric.data import Data
-from torch_geometric.loader import DataLoader
-from sklearn.neighbors import kneighbors_graph, radius_neighbors_graph
-from sklearn.model_selection import StratifiedKFold, train_test_split
 
 def pickleLoad(ifile):
     with open(ifile, "rb") as f:
