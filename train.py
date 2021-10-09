@@ -138,4 +138,4 @@ if __name__ == '__main__':
         aupr.append(average_precision_score(yy, zz))
     print('Average classification performance on test sets by aggregating the prediction from top 10 best models:')
     print("avg Test AUC overall=", np.mean(auroc), "+/-", np.std(auroc))
-    print("avg Test PR overall=", np.mean(bb), "+/-", np.std(aupr))
+    print("avg Test PR overall=", np.mean(aupr), "+/-", np.std(aupr))
