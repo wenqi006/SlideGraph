@@ -103,8 +103,6 @@ class GNN(torch.nn.Module):
         self.pooling = {'max':global_max_pool,'mean':global_mean_pool,'add':global_add_pool}[pooling]
         self.gembed = gembed #if True then learn graph embedding for final classification (classify pooled node features) otherwise pool node decision scores
 
-        #train_eps = True#config['train_eps']
-
         for layer, out_emb_dim in enumerate(self.embeddings_dim):
             if layer == 0:
                 self.first_h = Sequential(Linear(dim_features, out_emb_dim), BatchNorm1d(out_emb_dim), ReLU())
@@ -271,13 +269,9 @@ class NetWrapper:
             
             optimizer.zero_grad()
             output,_,_ = model(data)
-            #import pdb; pdb.set_trace()
-            # Can add contrastive loss if reqd
-            #import pdb; pdb.set_trace()
             y = data.y
             loss =0
             c = 0
-            #z = Variable(torch.from_numpy(np.array(0))).type(torch.FloatTensor)
             z = toTensor([0])  
             for i in range(len(y)-1):
                 for j in range(i+1,len(y)):
@@ -417,8 +411,6 @@ class NetWrapper:
                 showresults = True
                 
             if showresults:                
-                # msg = f'Epoch: {epoch}, TR loss: {train_loss} TR acc: {train_acc}, VL loss: {val_loss} VL acc: {val_acc} ' \
-                #     f'TE loss: {test_loss} TE acc: {test_acc}'
                 msg = f'Epoch: {epoch}, TR loss: {train_loss} TR perf: {train_acc}, VL perf: {val_acc} ' \
                     f'TE perf: {test_acc}, Best: VL perf: {best_val_acc} TE perf: {test_acc_at_best_val_acc} VL pr: {val_pr_at_best_val_acc} TE pr: {test_pr_at_best_val_acc}'
                 tqdm.write('\n'+msg)                   
