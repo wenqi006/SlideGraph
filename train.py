@@ -109,7 +109,7 @@ if __name__ == '__main__':
             early_stopping=30,
             return_best=False,
             log_every=10)
-        Fdata.append((best_model, test_dataset, valid_dataset))
+        Fdata.append((best_model, test_dataset, train_dataset))
         Vacc.append(val_acc)
         Tacc.append(tt_acc)
         Vapr.append(val_pr)
@@ -127,7 +127,7 @@ if __name__ == '__main__':
     auroc = []
     aupr = []
     for idx in range(len(Fdata)):
-        Q, test_dataset, valid_dataset = Fdata[idx]
+        Q, test_dataset, train_dataset = Fdata[idx]
         zz, yy = EnsembleDecisionScoring(Q, train_dataset, test_dataset, device=net.device, k=10)
         auroc.append(roc_auc_score(yy, zz))
         aupr.append(average_precision_score(yy, zz))
